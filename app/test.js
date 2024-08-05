@@ -60,23 +60,17 @@ export default function Home() {
     if (docSnap.exists()) {
       const {count} = docSnap.data()
       await setDoc(docRef, {count: count + 1})
-    } else {
-      await setDoc(docRef, {count: 1})
+      await updatePantry()
     }
-    await updatePantry()
+    else {
+      await setDoc(docRef, {count: 1})
+      await updatePantry()
+    }
   }
   
   const removeItem = async(item) => {
     const docRef = doc(collection(db, 'pantry'), item)
-    const docSnap = await getDoc(docRef)
-    if (docSnap.exists()) {
-      const {count} = docSnap.data()
-      if (count == 1) {
-        await deleteDoc(docRef)
-      } else {
-        await setDoc(docRef, {count: count - 1})
-      }
-    }
+    await deleteDoc(docRef)
     await updatePantry()
   }
 
@@ -105,7 +99,7 @@ export default function Home() {
               variant="outlined" 
               fullWidth 
               value={itemName}
-              onChange={(e) => setItemName(e.target.value.toLowerCase())}
+              onChange={(e) => setItemName(e.target.value)}
             />
             <Button
               variant="outlined"
@@ -134,7 +128,7 @@ export default function Home() {
 
       </Box>
       <Stack width="800px" height="300px" spacing={2} overflow={"auto"}>
-        {pantry.map(({name, count}) => (
+        {pantry.map((name, count) => (
           <Box
             key={name}
             width="100%" 
